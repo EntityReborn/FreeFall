@@ -1,0 +1,12 @@
+# Fall distance to ignore. Set to 0 for any fall distance.
+# Dependent on whether the player is standing or sneaking.
+stand-max-distance: 0
+sneak-max-distance: 0
+
+# Messages. Set to "" to not send a message. %NAME% will be replaced by player's name,
+# %DIST% will be replaced by fall distance.
+# Always use quotes for these values. Escape double quotes.
+stand-console-msg: "%NAME% fell %DIST% blocks while standing, but didn't get hurt!"
+sneak-console-msg: "%NAME% fell %DIST% blocks while sneaking, but didn't get hurt!"
+stand-player-msg: "You fell %DIST% blocks, but didn't get hurt!"
+sneak-player-msg: "You fell %DIST% blocks, but didn't get hurt!"
