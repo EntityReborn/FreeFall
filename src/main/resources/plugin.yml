@@ -1,0 +1,9 @@
+author: __import__
+database: false
+description: Lets players fall without damage if crouched and have a specific permission.
+generator: http://dinnerbone.com/minecraft/tools/pluginator/
+main: me.gmail.entityreborn.freefall.Freefall
+name: FreeFall
+startup: postworld
+url: http://github.com/entityreborn/FreeFall
+version: 0.0.1
