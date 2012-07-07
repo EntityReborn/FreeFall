@@ -57,7 +57,7 @@ You might want to give some players the ability to bypass the limit, allowing th
 
 ##Credits##
 
-* Me (EntityReborn aka __import__) - Code / Implementation
+* Me (`EntityReborn` aka `__import__`) - Code / Implementation
 * Malvagio87 from 10hearts.com - Original idea
 
-You can usually find me in #CommandHelper on irc.esper.net, usually with nick __import__ or Masamune.
+You can usually find me in `#CommandHelper` on `irc.esper.net`, usually with nick `__import__` or `Masamune`.
