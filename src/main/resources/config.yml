@@ -1,12 +1,21 @@
-# Fall distance to ignore. Set to 0 for any fall distance.
+# Damage calculation based on distance fallen.
+# Use 'fallen' for the distance fallen and 'damage' for the
+# default damage from that height. Calculated results less 
+# than 0 are interpreted as 0.
 # Dependent on whether the player is standing or sneaking.
-stand-max-distance: 0
-sneak-max-distance: 0
+# The default is around 'fallen - 3'
+stand-calculation: fallen - 3
+sneak-calculation: fallen - 3
 
 # Messages. Set to "" to not send a message. %NAME% will be replaced by player's name,
 # %DIST% will be replaced by fall distance.
-# Always use quotes for these values. Escape double quotes.
 stand-console-msg: "%NAME% fell %DIST% blocks while standing, but didn't get hurt!"
 sneak-console-msg: "%NAME% fell %DIST% blocks while sneaking, but didn't get hurt!"
 stand-player-msg: "You fell %DIST% blocks, but didn't get hurt!"
 sneak-player-msg: "You fell %DIST% blocks, but didn't get hurt!"
+
+# Same as above, only %DAMG% is replaced with the calculated damage.
+stand-console-msg-damaged: "%NAME% fell %DIST% blocks while standing, and sustained %DAMG% damage!"
+sneak-console-msg-damaged: "%NAME% fell %DIST% blocks while sneaking, and sustained %DAMG% damage!"
+stand-player-msg-damaged: "You fell %DIST% blocks, and sustained %DAMG% damage!"
+sneak-player-msg-damaged: "You fell %DIST% blocks, and sustained %DAMG% damage!"
