@@ -1,5 +1,7 @@
 package me.gmail.entityreborn.freefall;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -9,12 +11,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.matheclipse.parser.client.eval.DoubleEvaluator;
-import org.matheclipse.parser.client.eval.DoubleVariable;
-import org.matheclipse.parser.client.eval.IDoubleValue;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 
 public class Freefall extends JavaPlugin implements Listener {
+    private boolean debug = false;
+    
+    public void debugMessage(String message) {
+        if (debug) {
+            this.getLogger().info(message);
+        }
+    }
+    
+    @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         
@@ -22,6 +34,7 @@ public class Freefall extends JavaPlugin implements Listener {
         saveConfig();
     }
     
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         String cmdname = command.getName().toLowerCase();
         
@@ -34,11 +47,26 @@ public class Freefall extends JavaPlugin implements Listener {
                     sender.sendMessage("FreeFall reloaded");
                     return true;
                 }
-            } else if (cmd.equals("version")) {
-                if (sender.isOp() || sender.hasPermission("freefall.reload")) {
-                    sender.sendMessage("FreeFall " + getDescription().getVersion());
+            } else if (cmd.equals("debug")) {
+                if (sender.isOp() || sender.hasPermission("freefall.debug")) {
+                    debug = !debug;
+                    if (debug) {
+                        sender.sendMessage("Freefall debug mode enabled.");
+                    } else {
+                        sender.sendMessage("Freefall debug mode disabled.");
+                    }
+                    
+                    return true;
+                }    
+            } else if (cmd.equals("info")) {
+                if (sender.isOp() || sender.hasPermission("freefall.info")) {
+                    sender.sendMessage("Stand calculation: " + getConfig().getString("stand-calculation"));
+                    sender.sendMessage("Sneak calculation: " + getConfig().getString("sneak-calculation"));
                     return true;
                 }
+            } else if (cmd.equals("version")) {
+                sender.sendMessage("FreeFall " + getDescription().getVersion());
+                return true;
             }
         }
         
@@ -59,10 +87,15 @@ public class Freefall extends JavaPlugin implements Listener {
                 String playermsgdmgd;
                 String eval;
                 
+                int damage = 0;
+                int falldistance = (int)p.getFallDistance() + 1;
+                
                 if(p.isSneaking()) {
                     if(!p.hasPermission("freefall.sneak")) {
                         return;
                     }
+                    
+                    this.debugMessage(p.getName() + " fell " + falldistance + " while sneaking.");
                     
                     if(p.hasPermission("freefall.sneak.bypass")) {
                         bypass = true;
@@ -78,6 +111,8 @@ public class Freefall extends JavaPlugin implements Listener {
                         return;
                     }
                     
+                    this.debugMessage(p.getName() + " fell " + falldistance + " while standing.");
+                    
                     if(p.hasPermission("freefall.stand.bypass")) {
                         bypass = true;
                     } 
@@ -89,19 +124,21 @@ public class Freefall extends JavaPlugin implements Listener {
                     playermsgdmgd = getConfig().getString("stand-player-msg-damaged");
                 }
                 
-                double damage = 0;
-                int falldistance = (int)p.getFallDistance() + 3;
-                
                 if (!bypass) {
-                    IDoubleValue fallen = new DoubleVariable(falldistance);
-                    IDoubleValue dmg = new DoubleVariable((int)event.getDamage());
-                    DoubleEvaluator engine = new DoubleEvaluator();
-                    engine.defineVariable("distance", fallen);
-                    engine.defineVariable("damage", dmg);
-                    damage = engine.evaluate(eval);
+                    ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
+                    Bindings bindings = engine.createBindings();
+
+                    bindings.put("fallen", falldistance);
+                    bindings.put("damage", event.getDamage());
+                    
+                    try {
+                        damage = ((Double)engine.eval(eval, bindings)).intValue();
+                    } catch (ScriptException ex) {
+                        Logger.getLogger(Freefall.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
-                if (bypass || (int)damage == 0) {
+                if (bypass || damage == 0) {
                     if(!consolemsg.isEmpty()){
                         getServer().getConsoleSender()
                             .sendMessage(consolemsg
@@ -116,15 +153,16 @@ public class Freefall extends JavaPlugin implements Listener {
                             .replace("%DIST%", 
                                 String.valueOf(falldistance)));
                     }
-                
+                    
+                    this.debugMessage(p.getName() + " didn't get hurt.");
                     event.setCancelled(true);
                 } else {
-                    if ((damage) > 0) {
+                    if (damage > 0) {
                         if(!consolemsgdmgd.isEmpty()){
                             getServer().getConsoleSender()
                                 .sendMessage(consolemsgdmgd
                                     .replace("%NAME%", p.getName())
-                                    .replace("%DAMG%", String.valueOf((int)damage))
+                                    .replace("%DAMG%", String.valueOf(damage))
                                     .replace("%DIST%", 
                                         String.valueOf(falldistance)));
                         }
@@ -132,14 +170,14 @@ public class Freefall extends JavaPlugin implements Listener {
                         if(!playermsgdmgd.isEmpty()){
                             p.sendMessage(playermsgdmgd
                                 .replace("%NAME%", p.getName())
-                                .replace("%DAMG%", String.valueOf((int)damage))    
+                                .replace("%DAMG%", String.valueOf(damage))    
                                 .replace("%DIST%", 
                                     String.valueOf(falldistance)));
                         }
                         
-                        event.setDamage((int) damage);
+                        this.debugMessage(p.getName() + " suffered " + falldistance + " damage.");
+                        event.setDamage(damage);
                     }
-                        
                 }
             }
         }

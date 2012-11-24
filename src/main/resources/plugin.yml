@@ -6,16 +6,24 @@ main: me.gmail.entityreborn.freefall.Freefall
 name: FreeFall
 startup: postworld
 url: http://github.com/entityreborn/FreeFall
-version: 0.0.2
+version: ${project.version}
 
 commands:
     freefall:
         description: Run commands pertaining to the FreeFall plugin.
-        usage: /freefall [reload|version]
+        usage: /freefall [reload|version|info|debug]
         
     freefall reload:
         description: Reload the config file.
         usage: /freefall reload
+    
+    freefall info:
+        description: Show the calculations involved.
+        usage: /freefall info
+        
+    freefall reload:
+        description: Enable debug statements.
+        usage: /freefall debug
         
     freefall version:
         description: Mentions the version of FreeFall.
