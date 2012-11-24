@@ -4,10 +4,34 @@
   <groupId>me.gmail.entityreborn.freefall</groupId>
   <artifactId>FreeFall</artifactId>
   <name>FreeFall</name>
-  <version>0.0.2</version>
+  <version>0.0.5</version>
   <url>http://github.com/entityreborn/FreeFall</url>
   <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>autoincrement-versions-maven-plugin</artifactId>
+        <version>2.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>update-pom-versions</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>increment</goal>
+              <goal>commit</goal>
+            </goals>
+            <configuration>
+              <autoIncrementVersion>true</autoIncrementVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.0.2</version>
@@ -37,14 +61,18 @@
       <url>http://repo.bukkit.org/content/groups/public</url>
     </repository>
     <repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>org-matheclipse-repository</id>
-      <url>http://symja.googlecode.com/svn/maven-repository/</url>
+      <id>Plugin Metrics</id>
+      <url>http://repo.mcstats.org/content/repositories/public</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots />
+      <id>autoincrement-versions-maven-plugin</id>
+      <name>autoincrement-versions-maven-plugin</name>
+      <url>http://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
+    </pluginRepository>
+  </pluginRepositories>
   <dependencies>
     <dependency>
       <groupId>org.bukkit</groupId>
