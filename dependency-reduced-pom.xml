@@ -4,7 +4,7 @@
   <groupId>me.gmail.entityreborn.freefall</groupId>
   <artifactId>FreeFall</artifactId>
   <name>FreeFall</name>
-  <version>0.0.5</version>
+  <version>0.0.8</version>
   <url>http://github.com/entityreborn/FreeFall</url>
   <build>
     <resources>
